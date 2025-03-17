@@ -17,7 +17,7 @@ import { insertIntoTable } from "../../database/database";
 
 import { PLACEHOLDER } from "../../variable";
 
-import styles from "../../../assets/styles/Login";
+import styles from "../../../assets/styles/LoginSignup";
 
 const dbName = "auth.db";
 const dbPath = FileSystem.documentDirectory + "SQLite/" + dbName;

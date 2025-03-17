@@ -1,4 +1,5 @@
 const PLACEHOLDER={
+    // Form Placeholders
     mandatoryStar:'*',
     mandatoryWord:'Mandatory',
     username:'Username',
@@ -6,7 +7,11 @@ const PLACEHOLDER={
     rePassword:'Re-Enter Password',
     displayName:'Display Name',
     mobileNumber:'Mobile Number',
-    emailAddress:'Email Address'
+    emailAddress:'Email Address',
+
+    // App Placeholders
+    welcome:'Welcome',
+    trackMEase:'Track-M-Ease'
 
 }
 

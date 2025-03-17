@@ -8,6 +8,12 @@ import {
   ScrollView,
 } from "react-native";
 import { router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+
+const storeSecureLoginInfo = async (token: string) => {
+  await SecureStore.setItemAsync("userToken", token);
+};
+
 
 import { ToastProvider, useToast } from "react-native-toast-notifications";
 
@@ -15,7 +21,7 @@ import { getDataFromTable } from "../../database/database";
 
 import { PLACEHOLDER } from "../../variable";
 
-import styles from "../../../assets/styles/Login";
+import styles from "../../../assets/styles/LoginSignup";
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -61,7 +67,7 @@ const LoginScreen = () => {
           animationType: "slide-in",
           style: { marginLeft: 20 },
         });
-
+        storeSecureLoginInfo(success.data[0].username);
         router.push("./HomeScreen");
       } else {
         toast.show("Invalid Credentials", {
