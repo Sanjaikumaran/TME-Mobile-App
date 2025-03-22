@@ -28,7 +28,6 @@ const HeaderBarStyles = StyleSheet.create({
     // backgroundColor: "#C0C0C0",
     backgroundColor: "#E6E6FA",
     alignItems: "flex-start",
-  
   },
 });
 
