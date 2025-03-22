@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-const loginSignupStyles = StyleSheet.create({
+const LoginSignupStyles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
@@ -122,4 +122,4 @@ const loginSignupStyles = StyleSheet.create({
   },
 });
 
-export default loginSignupStyles;
+export default LoginSignupStyles;

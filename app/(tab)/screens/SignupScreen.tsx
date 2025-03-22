@@ -15,9 +15,9 @@ import * as FileSystem from "expo-file-system";
 
 import { insertIntoTable } from "../../database/database";
 
-import { PLACEHOLDER } from "../../variable";
+import { PLACEHOLDER } from "@/constants/variable";
 
-import styles from "../../../assets/styles/Login";
+import styles from "@/assets/styles/LoginSignup";
 
 const dbName = "auth.db";
 const dbPath = FileSystem.documentDirectory + "SQLite/" + dbName;
@@ -105,6 +105,9 @@ const SignupScreen = () => {
         animationType: "slide-in",
         style: { marginLeft: 20 },
       });
+      setTimeout(() => {
+        router.push("./LoginScreen");
+      }, 400);
     } else {
       if (response.message.includes("UNIQUE constraint failed")) {
         toast.show("Username already exists", {

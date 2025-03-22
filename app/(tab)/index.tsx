@@ -1,7 +1,11 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 
 import { router } from "expo-router";
-import styles from "../../assets/styles/Login";
+
+import styles from "@/assets/styles/LoginSignup";
+
+import { PLACEHOLDER } from "@/constants/variable";
+
 export default function App() {
   return (
     
@@ -13,7 +17,7 @@ export default function App() {
         />
       </View>
 
-      <Text style={styles.title}>Welcome!</Text>
+      <Text style={styles.title}>{PLACEHOLDER.welcome}!</Text>
 
       <TouchableOpacity
         style={styles.button}

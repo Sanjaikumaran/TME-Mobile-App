@@ -9,13 +9,15 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { ToastProvider, useToast } from "react-native-toast-notifications";
 
 import { getDataFromTable } from "../../database/database";
 
-import { PLACEHOLDER } from "../../variable";
+import { PLACEHOLDER } from "@/constants/variable";
 
-import styles from "../../../assets/styles/Login";
+import styles from "@/assets/styles/LoginSignup";
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -51,18 +53,23 @@ const LoginScreen = () => {
     );
 
     if (success.flag && success.data.length > 0) {
-      const password = success.data[0].password;
+      const data = success.data[0];
 
-      if (btoa(userPassword) === password) {
-        toast.show("Login Successful!", {
-          type: "success",
-          placement: "bottom",
-          duration: 4000,
-          animationType: "slide-in",
-          style: { marginLeft: 20 },
-        });
+      if (btoa(userPassword) === data.password) {
+        delete data.password;
+        try {
+          await AsyncStorage.setItem("LoginInfo",JSON.stringify(data));
+        
+          toast.show("Login Successful!", {
+            type: "success",
+            placement: "bottom",
+            duration: 4000,
+            animationType: "slide-in",
+            style: { marginLeft: 20 },
+          });
 
-        router.push("./HomeScreen");
+          router.push("./HomeScreen");
+        } catch (error) {}
       } else {
         toast.show("Invalid Credentials", {
           type: "danger",
