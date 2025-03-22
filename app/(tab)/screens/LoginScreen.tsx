@@ -127,11 +127,9 @@ const LoginScreen = () => {
         </TouchableOpacity>
 
         <Text style={styles.orText}>or</Text>
-        <Text
-          style={styles.socialText}
-          onPress={() => router.push("./SignupScreen")}
-        >
-          Don't have account? &nbsp;
+
+        <Text  onPress={() => router.push("./SignupScreen")}>
+          <Text style={styles.questionText}>   Don't have account? &nbsp;</Text>
           <Text style={styles.boldText}>Sign Up</Text>
         </Text>
       </ScrollView>

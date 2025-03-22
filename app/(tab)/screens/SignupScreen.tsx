@@ -210,11 +210,8 @@ const SignupScreen = () => {
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
         <Text style={styles.orText}>or</Text>
-        <Text
-          style={styles.socialText}
-          onPress={() => router.push("./LoginScreen")}
-        >
-          Already have account? &nbsp;
+        <Text onPress={() => router.push("./LoginScreen")}>
+          <Text style={styles.questionText}>Already have account? &nbsp;</Text>
           <Text style={styles.boldText}>Log In</Text>
         </Text>
       </ScrollView>
