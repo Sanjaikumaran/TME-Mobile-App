@@ -4,7 +4,7 @@ import { router } from "expo-router";
 
 import styles from "@/assets/styles/LoginSignup";
 
-import { PLACEHOLDER } from "../variable";
+import { PLACEHOLDER } from "@/constants/variable";
 
 export default function App() {
   return (

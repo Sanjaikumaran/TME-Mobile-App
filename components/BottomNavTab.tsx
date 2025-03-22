@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import styles from "../assets/styles/BottomNavTab";
+import { router } from "expo-router";
 
- export default function BottomNavTab({ onTabChange }: { onTabChange: (tab: string) => void }) {
+import styles from "@/assets/styles/BottomNavTab";
+
+export default function BottomNavTab() {
   const [activeTab, setActiveTab] = useState("Home");
 
-  const handlePress = (tab:string) => {
+  const handlePress = (tab: string) => {
     setActiveTab(tab);
-    onTabChange(tab);
+    router.push(`./${tab.replace(" ", "")}Screen`);
   };
 
   return (
@@ -26,4 +28,3 @@ import styles from "../assets/styles/BottomNavTab";
     </View>
   );
 }
-

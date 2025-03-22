@@ -23,11 +23,10 @@ const HeaderBarStyles = StyleSheet.create({
     color: "#fff",
   },
   menuTab: {
-    width: '50%',
-    // transform
     height: '100%',
     zIndex:1,
-    backgroundColor: "black",
+    // backgroundColor: "#C0C0C0",
+    backgroundColor: "#E6E6FA",
     alignItems: "flex-start",
   
   },
