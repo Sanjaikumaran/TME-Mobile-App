@@ -1,3 +1,10 @@
+const LABEL={
+    transactionDate:'Transaction Date',
+    transactionTime:'Transaction Time',
+    amount:'Amount',
+    category:'Category',
+    remarks:'Remarks',
+}
 const PLACEHOLDER={
     // Form Placeholders
     mandatoryStar:'*',
@@ -11,8 +18,16 @@ const PLACEHOLDER={
 
     // App Placeholders
     welcome:'Welcome',
-    trackMEase:'Track-M-Ease'
+    trackMEase:'Track-M-Ease',
+
+    //Add Transaction
+    transactionDate:'Transaction Date',
+    transactionTime:'Transaction Time',
+    amount:'Enter transaction amount',
+    category:'Enter transaction category',
+    remarks:'Add remarks',
 
 }
 
+exports.LABEL = LABEL;
 exports.PLACEHOLDER = PLACEHOLDER;

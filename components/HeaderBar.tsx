@@ -12,20 +12,23 @@ import { PLACEHOLDER } from "@/constants/variable";
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const widthAnim = useRef(new Animated.Value(0)).current;
-useEffect(()=>{
-  getDataFromTable('users').then((res)=>{
-    console.log(res)
-  })
-},[])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await getDataFromTable("users");
+      console.log(res);
+    };
+    fetchData();
+  }, []);
+
   const toggleMenu = () => {
+    setIsMenuOpen((prev) => !prev); 
     Animated.timing(widthAnim, {
       toValue: isMenuOpen ? 0 : 250,
       duration: 250,
       easing: Easing.ease,
       useNativeDriver: false,
-    }).start(() => {
-      setIsMenuOpen(!isMenuOpen);
-    });
+    }).start();
   };
 
   return (

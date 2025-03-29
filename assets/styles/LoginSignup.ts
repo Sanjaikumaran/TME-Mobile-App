@@ -80,6 +80,7 @@ const LoginSignupStyles = StyleSheet.create({
   },
   boldText: {
     fontWeight: "bold",
+    color: "#555",
   },
   button: {
     backgroundColor: "#4B0082",
@@ -106,20 +107,10 @@ const LoginSignupStyles = StyleSheet.create({
     fontWeight: "bold",
     color: "#555",
   },
-  socialText: {
-    fontSize: 14,
-    color: "#555",
-    marginBottom: 10,
-  },
-  socialIcons: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  socialIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-  },
+  questionText:{
+    color: "black",
+
+  }
 });
 
 export default LoginSignupStyles;
