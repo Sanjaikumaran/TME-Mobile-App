@@ -22,7 +22,7 @@ export default function App() {
   }, []);
 
   const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev); 
+    setIsMenuOpen((prev) => !prev);
     Animated.timing(widthAnim, {
       toValue: isMenuOpen ? 0 : 250,
       duration: 250,
@@ -32,23 +32,22 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerBar}>
-        {isMenuOpen ? (
-          <CloseIcon onPress={toggleMenu} color="#fff" />
-        ) : (
-          <ThreeBarIcon onPress={toggleMenu} color="#fff" />
-        )}
+    <>
+      <View style={styles.container}>
+        <View style={styles.headerBar}>
+          {isMenuOpen ? (
+            <CloseIcon onPress={toggleMenu} color="#fff" />
+          ) : (
+            <ThreeBarIcon onPress={toggleMenu} color="#fff" />
+          )}
 
-        <Text style={styles.title}>{PLACEHOLDER.trackMEase}</Text>
-        <LogoutIcon onPress={() => console.log("logOut")} color="#fff" />
+          <Text style={styles.title}>{PLACEHOLDER.trackMEase}</Text>
+          <LogoutIcon onPress={() => console.log("logOut")} color="#fff" />
+        </View>
       </View>
-
-      <Animated.View
-        style={[{ width: widthAnim }, styles.menuTab]}
-      >
+      <Animated.View style={[{ width: widthAnim }, styles.menuTab]}>
         {}
       </Animated.View>
-    </View>
+    </>
   );
 }

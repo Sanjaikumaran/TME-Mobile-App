@@ -11,6 +11,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <HeaderBar />
+      <View></View>
       <BottomNavTab />
     </View>
   );

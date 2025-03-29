@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Keyboard,
 } from "react-native";
 import { router } from "expo-router";
 
@@ -20,12 +21,13 @@ import { PLACEHOLDER } from "@/constants/variable";
 import styles from "@/assets/styles/LoginSignup";
 
 const LoginScreen = () => {
-  const [username, setUsername] = useState("");
-  const [userPassword, setPassword] = useState("");
+  const [username, setUsername] = useState("Hi");
+  const [userPassword, setPassword] = useState("Hi");
 
   const toast = useToast();
 
   const handleLogin = async () => {
+    Keyboard.dismiss();
     if (!username) {
       toast.show("Please enter username", {
         type: "warning",
@@ -46,20 +48,20 @@ const LoginScreen = () => {
       });
       return;
     }
-    const success = await getDataFromTable(
+    const response = await getDataFromTable(
       "users",
       ["username", "password"],
       `username='${username}'`
     );
 
-    if (success.flag && success.data.length > 0) {
-      const data = success.data[0];
+    if (response.flag && response.data.length > 0) {
+      const data = response.data[0];
 
       if (btoa(userPassword) === data.password) {
         delete data.password;
         try {
-          await AsyncStorage.setItem("LoginInfo",JSON.stringify(data));
-        
+          await AsyncStorage.setItem("LoginInfo", JSON.stringify(data));
+
           toast.show("Login Successful!", {
             type: "success",
             placement: "bottom",
@@ -102,6 +104,7 @@ const LoginScreen = () => {
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         <View style={styles.inputContainer}>
           <Text style={styles.inputIcon}>👤</Text>
@@ -128,8 +131,8 @@ const LoginScreen = () => {
 
         <Text style={styles.orText}>or</Text>
 
-        <Text  onPress={() => router.push("./SignupScreen")}>
-          <Text style={styles.questionText}>   Don't have account? &nbsp;</Text>
+        <Text onPress={() => router.push("./SignupScreen")}>
+          <Text style={styles.questionText}> Don't have account? &nbsp;</Text>
           <Text style={styles.boldText}>Sign Up</Text>
         </Text>
       </ScrollView>
