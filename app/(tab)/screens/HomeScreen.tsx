@@ -1,13 +1,11 @@
-import { useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View } from "react-native";
 
-import { getDataFromTable } from "@/app/database/database";
-
-import BottomNavTab from "@/components/BottomNavTab";
-import styles from "@/assets/styles/HeaderBar";
 import HeaderBar from "@/components/HeaderBar";
+import BottomNavTab from "@/components/BottomNavTab";
 
-export default function App() {
+import styles from "@/assets/styles/HeaderBar";
+
+const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <HeaderBar />
@@ -15,4 +13,5 @@ export default function App() {
       <BottomNavTab />
     </View>
   );
-}
+};
+export default HomeScreen;

@@ -1,15 +1,20 @@
 import { useState, useRef, useEffect } from "react";
 import { View, Text, Animated, Easing } from "react-native";
 
-import { getDataFromTable } from "@/app/database/database";
+import { getDataFromTable } from "@/utils/database/database";
+
+import { PLACEHOLDER } from "@/constants/variable";
+
 import LogoutIcon from "@/assets/icons/LogoutIcon";
 import ThreeBarIcon from "@/assets/icons/ThreeBarIcon";
 import CloseIcon from "@/assets/icons/CloseIcon";
 
 import styles from "@/assets/styles/HeaderBar";
-import { PLACEHOLDER } from "@/constants/variable";
 
-export default function App() {
+interface HeaderBarProps {
+  headerText?: string;
+}
+const HeaderBar = ({ headerText = PLACEHOLDER.trackMEase }: HeaderBarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const widthAnim = useRef(new Animated.Value(0)).current;
 
@@ -41,7 +46,7 @@ export default function App() {
             <ThreeBarIcon onPress={toggleMenu} color="#fff" />
           )}
 
-          <Text style={styles.title}>{PLACEHOLDER.trackMEase}</Text>
+          <Text style={styles.title}>{headerText}</Text>
           <LogoutIcon onPress={() => console.log("logOut")} color="#fff" />
         </View>
       </View>
@@ -50,4 +55,5 @@ export default function App() {
       </Animated.View>
     </>
   );
-}
+};
+export default HeaderBar;

@@ -8,13 +8,11 @@ import {
   ScrollView,
   Keyboard,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ToastProvider, useToast } from "react-native-toast-notifications";
 import { router } from "expo-router";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import { ToastProvider, useToast } from "react-native-toast-notifications";
-
-import { getDataFromTable } from "../../database/database";
+import { getDataFromTable } from "@/utils/database/database";
 
 import { PLACEHOLDER } from "@/constants/variable";
 

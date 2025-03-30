@@ -1,35 +1,29 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   FlatList,
-  Keyboard,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { ToastProvider, useToast } from "react-native-toast-notifications";
 
 import HeaderBar from "@/components/HeaderBar";
 import BottomNavTab from "@/components/BottomNavTab";
+import Dropdown from "@/components/Dropdown";
+
+import { insertIntoTable, getDataFromTable } from "@/utils/database/database";
+import { formatDateTime } from "@/utils/helpers";
+
+import { PLACEHOLDER, LABEL } from "@/constants/variable";
+
 import CloseIcon from "@/assets/icons/CloseIcon";
 import DownIcon from "@/assets/icons/ChevronDownIcon";
 
-import { PLACEHOLDER, LABEL } from "@/constants/variable";
 import styles from "@/assets/styles/AddTransaction";
-import { insertIntoTable } from "@/app/database/database";
 
 const AddTransactionScreen = () => {
-  const categories = [
-    { id: "1", name: "Optison 1" },
-    { id: "2", name: "Option 2" },
-    { id: "3", name: "Option 3" },
-  ];
-  const subCategories = [
-    { id: "1", name: "dg 1" },
-    { id: "2", name: " 2" },
-    { id: "3", name: "dfgfdg 3" },
-  ];
   const flatListRef = useRef<FlatList<any> | null>(null);
 
   const toast = useToast();
@@ -56,22 +50,33 @@ const AddTransactionScreen = () => {
   });
   const [isAtBottom, setIsAtBottom] = useState(true);
 
-  const [focusedCategoryId, setFocusedCategoryId] = useState(null);
-  const [focusedSubcategoryId, setFocusedSubcategoryId] = useState(null);
-  const [dropdownData, setDropdownData] = useState<any>([]);
+  const [categories, setCategories] = useState<Array<string>>([]);
+  const [subCategories, setSubCategories] = useState<Array<string>>([]);
 
+  const getTransactions = async () => {
+    const response = await getDataFromTable("Transactions", [
+      "category",
+      "subCategory",
+    ]);
+    if (response.flag) {
+      const categories = Array.from(
+        new Set(response.data.map((t) => t.category))
+      );
+      const subCategories = Array.from(
+        new Set(response.data.map((t) => t.subCategory))
+      );
+      setCategories(categories);
+      setSubCategories(subCategories);
+    }
+  };
+  useEffect(() => {
+    getTransactions();
+  }, []);
   const handleScroll = (event: any) => {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
     const isBottom =
       layoutMeasurement.height + contentOffset.y >= contentSize.height - 10;
     setIsAtBottom(isBottom);
-  };
-  const formatDateTime = (date: Date, mode: "date" | "time"): string => {
-    return mode === "date"
-      ? `${date.getDate().toString().padStart(2, "0")}-${(date.getMonth() + 1)
-          .toString()
-          .padStart(2, "0")}-${date.getFullYear()}`
-      : date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   const handleDateTimeChange = (
@@ -105,7 +110,7 @@ const AddTransactionScreen = () => {
     toast.show("Transaction form added!", {
       type: "display",
       placement: "bottom",
-      duration: 2000,
+      duration: 1500,
       animationType: "slide-in",
       style: { marginLeft: 20 },
     });
@@ -120,7 +125,7 @@ const AddTransactionScreen = () => {
     toast.show(`Transaction ${deleteIndex + 1} removed!`, {
       type: "display",
       placement: "bottom",
-      duration: 2000,
+      duration: 1500,
       animationType: "slide-in",
       style: { marginLeft: 20 },
     });
@@ -166,6 +171,7 @@ const AddTransactionScreen = () => {
           remarks: "",
         },
       ]);
+      getTransactions();
     } else {
       toast.show("Could not add transaction", {
         type: "danger",
@@ -177,28 +183,9 @@ const AddTransactionScreen = () => {
     }
   };
 
-  const onCategorySelect = (id: any, text: any) => {
-    const matchingCategories = categories.filter((category) =>
-      category.name.toLowerCase().includes(text.toLowerCase())
-    );
-    setDropdownData(matchingCategories);
-    setTransactions(
-      transactions.map((t) => (t.id === id ? { ...t, category: text } : t))
-    );
-  };
-
-  const onSubcategorySelect = (id: any, text: any) => {
-    const matchingCategories = subCategories.filter((category) =>
-      category.name.toLowerCase().includes(text.toLowerCase())
-    );
-    setDropdownData(matchingCategories);
-    setTransactions(
-      transactions.map((t) => (t.id === id ? { ...t, subCategory: text } : t))
-    );
-  };
   return (
     <View style={styles.container}>
-      <HeaderBar />
+      <HeaderBar headerText="New Transaction" />
       <View>
         <FlatList
           ref={flatListRef}
@@ -262,101 +249,47 @@ const AddTransactionScreen = () => {
                   }
                 />
               </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>{LABEL.category}</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder={PLACEHOLDER.category + PLACEHOLDER.mandatoryStar}
-                  value={item.category}
-                  onFocus={() => {
-                    onCategorySelect(item.id, item.category);
-                    setFocusedCategoryId(item.id);
-                  }}
-                  onBlur={() => setFocusedCategoryId(null)}
-                  onChangeText={(text) => {
-                    onCategorySelect(item.id, text);
-                    setTransactions(
-                      transactions.map((t) =>
-                        t.id === item.id ? { ...t, category: text } : t
-                      )
-                    );
-                  }}
-                />
-                {focusedCategoryId === item.id && dropdownData.length > 0 && (
-                  <FlatList
-                    style={styles.dropdownContainer}
-                    data={dropdownData}
-                    keyExtractor={(dropdownItem: any) =>
-                      dropdownItem.id.toString()
-                    }
-                    renderItem={({ item: dropdownItem }) => (
-                      <TouchableOpacity
-                        style={styles.dropdownItem}
-                        onPress={() => {
-                          Keyboard.dismiss();
+              <Dropdown
+                label={LABEL.category}
+                placeholder={PLACEHOLDER.category + PLACEHOLDER.mandatoryStar}
+                value={item.category}
+                options={categories}
+                onOptionSelect={(text) => {
+                  setTransactions(
+                    transactions.map((t) =>
+                      t.id === item.id ? { ...t, category: text } : t
+                    )
+                  );
+                }}
+                onChangeText={(text) => {
+                  setTransactions(
+                    transactions.map((t) =>
+                      t.id === item.id ? { ...t, category: text } : t
+                    )
+                  );
+                }}
+              />
+              <Dropdown
+                label={LABEL.subCategory}
+                placeholder={PLACEHOLDER.subCategory}
+                value={item.subCategory}
+                options={subCategories}
+                onOptionSelect={(text) => {
+                  setTransactions(
+                    transactions.map((t) =>
+                      t.id === item.id ? { ...t, subCategory: text } : t
+                    )
+                  );
+                }}
+                onChangeText={(text) => {
+                  setTransactions(
+                    transactions.map((t) =>
+                      t.id === item.id ? { ...t, subCategory: text } : t
+                    )
+                  );
+                }}
+              />
 
-                          onCategorySelect(item.id, dropdownItem.name);
-                          setDropdownData(categories);
-                          setFocusedCategoryId(null);
-                        }}
-                      >
-                        <Text style={styles.dropdownItemText}>
-                          {dropdownItem.name}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                  />
-                )}
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>{LABEL.subCategory}</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder={
-                    PLACEHOLDER.subCategory + PLACEHOLDER.mandatoryStar
-                  }
-                  value={item.subCategory}
-                  onFocus={() => {
-                    onSubcategorySelect(item.id, item.subCategory);
-                    setFocusedSubcategoryId(item.id);
-                  }}
-                  onBlur={() => setFocusedSubcategoryId(null)}
-                  onChangeText={(text) => {
-                    onSubcategorySelect(item.id, text);
-                    setTransactions(
-                      transactions.map((t) =>
-                        t.id === item.id ? { ...t, subCategory: text } : t
-                      )
-                    );
-                  }}
-                />
-                {focusedSubcategoryId === item.id &&
-                  dropdownData.length > 0 && (
-                    <FlatList
-                      style={styles.dropdownContainer}
-                      data={dropdownData}
-                      keyExtractor={(dropdownItem: any) =>
-                        dropdownItem.id.toString()
-                      }
-                      renderItem={({ item: dropdownItem }) => (
-                        <TouchableOpacity
-                          style={styles.dropdownItem}
-                          onPress={() => {
-                            Keyboard.dismiss();
-
-                            onSubcategorySelect(item.id, dropdownItem.name);
-                            setDropdownData(subCategories);
-                            setFocusedSubcategoryId(null);
-                          }}
-                        >
-                          <Text style={styles.dropdownItemText}>
-                            {dropdownItem.name}
-                          </Text>
-                        </TouchableOpacity>
-                      )}
-                    />
-                  )}
-              </View>
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>{LABEL.remarks}</Text>
                 <TextInput

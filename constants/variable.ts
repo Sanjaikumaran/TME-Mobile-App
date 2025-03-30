@@ -30,5 +30,4 @@ const PLACEHOLDER = {
   remarks: "Add remarks",
 };
 
-exports.LABEL = LABEL;
-exports.PLACEHOLDER = PLACEHOLDER;
+export { LABEL, PLACEHOLDER };

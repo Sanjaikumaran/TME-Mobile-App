@@ -8,14 +8,11 @@ import {
   ScrollView,
   Keyboard,
 } from "react-native";
-import { useRouter } from "expo-router";
-
 import { ToastProvider, useToast } from "react-native-toast-notifications";
+import { useRouter } from "expo-router";
+import * as FileSystem from "expo-file-system"; // remove
 
-import * as FileSystem from "expo-file-system";
-
-import { insertIntoTable } from "../../database/database";
-
+import { insertIntoTable } from "@/utils/database/database";
 import { PLACEHOLDER } from "@/constants/variable";
 
 import styles from "@/assets/styles/LoginSignup";
