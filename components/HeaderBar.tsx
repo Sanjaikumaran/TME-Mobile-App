@@ -1,15 +1,20 @@
 import { useState, useRef, useEffect } from "react";
 import { View, Text, Animated, Easing } from "react-native";
 
-import { getDataFromTable } from "@/app/database/database";
+import { getDataFromTable } from "@/utils/database/database";
+
+import { PLACEHOLDER } from "@/constants/variable";
+
 import LogoutIcon from "@/assets/icons/LogoutIcon";
 import ThreeBarIcon from "@/assets/icons/ThreeBarIcon";
 import CloseIcon from "@/assets/icons/CloseIcon";
 
 import styles from "@/assets/styles/HeaderBar";
-import { PLACEHOLDER } from "@/constants/variable";
 
-export default function App() {
+interface HeaderBarProps {
+  headerText?: string;
+}
+const HeaderBar = ({ headerText = PLACEHOLDER.trackMEase }: HeaderBarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const widthAnim = useRef(new Animated.Value(0)).current;
 
@@ -22,7 +27,7 @@ export default function App() {
   }, []);
 
   const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev); 
+    setIsMenuOpen((prev) => !prev);
     Animated.timing(widthAnim, {
       toValue: isMenuOpen ? 0 : 250,
       duration: 250,
@@ -32,23 +37,23 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerBar}>
-        {isMenuOpen ? (
-          <CloseIcon onPress={toggleMenu} color="#fff" />
-        ) : (
-          <ThreeBarIcon onPress={toggleMenu} color="#fff" />
-        )}
+    <>
+      <View style={styles.container}>
+        <View style={styles.headerBar}>
+          {isMenuOpen ? (
+            <CloseIcon onPress={toggleMenu} color="#fff" />
+          ) : (
+            <ThreeBarIcon onPress={toggleMenu} color="#fff" />
+          )}
 
-        <Text style={styles.title}>{PLACEHOLDER.trackMEase}</Text>
-        <LogoutIcon onPress={() => console.log("logOut")} color="#fff" />
+          <Text style={styles.title}>{headerText}</Text>
+          <LogoutIcon onPress={() => console.log("logOut")} color="#fff" />
+        </View>
       </View>
-
-      <Animated.View
-        style={[{ width: widthAnim }, styles.menuTab]}
-      >
+      <Animated.View style={[{ width: widthAnim }, styles.menuTab]}>
         {}
       </Animated.View>
-    </View>
+    </>
   );
-}
+};
+export default HeaderBar;

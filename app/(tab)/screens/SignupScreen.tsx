@@ -6,15 +6,13 @@ import {
   Text,
   Image,
   ScrollView,
+  Keyboard,
 } from "react-native";
-import { useRouter } from "expo-router";
-
 import { ToastProvider, useToast } from "react-native-toast-notifications";
+import { useRouter } from "expo-router";
+import * as FileSystem from "expo-file-system"; // remove
 
-import * as FileSystem from "expo-file-system";
-
-import { insertIntoTable } from "../../database/database";
-
+import { insertIntoTable } from "@/utils/database/database";
 import { PLACEHOLDER } from "@/constants/variable";
 
 import styles from "@/assets/styles/LoginSignup";
@@ -26,6 +24,8 @@ const deleteDatabase = async () => {
     const fileInfo = await FileSystem.getInfoAsync(dbPath);
     if (fileInfo.exists) {
       await FileSystem.deleteAsync(dbPath);
+      console.log(dbPath);
+
       console.log("✅ Database file deleted successfully!");
     } else {
       console.log("⚠️ Database file does not exist.");
@@ -35,6 +35,7 @@ const deleteDatabase = async () => {
   }
 };
 
+//deleteDatabase();
 const SignupScreen = () => {
   const [username, setUsername] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
@@ -47,7 +48,7 @@ const SignupScreen = () => {
   const router = useRouter();
 
   const handleSignup = async () => {
-    //   deleteDatabase();
+    Keyboard.dismiss();
 
     toast.hideAll();
 
@@ -89,13 +90,15 @@ const SignupScreen = () => {
       });
       return;
     }
-    const response = await insertIntoTable("users", {
-      username: username,
-      password: btoa(newPassword),
-      displayName: displayName,
-      mobileNumber: mobileNumber,
-      emailAddress: emailAddress,
-    });
+    const response = await insertIntoTable("users", [
+      {
+        username: username,
+        password: btoa(newPassword),
+        displayName: displayName,
+        mobileNumber: mobileNumber,
+        emailAddress: emailAddress,
+      },
+    ]);
 
     if (response.flag) {
       toast.show("Account created successfully!", {
@@ -144,6 +147,7 @@ const SignupScreen = () => {
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         <View style={styles.inputContainer}>
           <Text style={styles.inputIcon}>👤</Text>

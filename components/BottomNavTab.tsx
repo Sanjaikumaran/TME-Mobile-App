@@ -4,7 +4,7 @@ import { router } from "expo-router";
 
 import styles from "@/assets/styles/BottomNavTab";
 
-export default function BottomNavTab() {
+const BottomNavTab = () => {
   const [activeTab, setActiveTab] = useState("Home");
 
   const handlePress = (tab: string) => {
@@ -27,4 +27,5 @@ export default function BottomNavTab() {
       ))}
     </View>
   );
-}
+};
+export default BottomNavTab;

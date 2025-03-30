@@ -1,9 +1,7 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 
 const HeaderBarStyles = StyleSheet.create({
   container: {
-    flex: 1,
-
     backgroundColor: "#f5f5f5",
     paddingVertical: 0,
   },
@@ -23,8 +21,10 @@ const HeaderBarStyles = StyleSheet.create({
     color: "#fff",
   },
   menuTab: {
-    height: '100%',
-    zIndex:1,
+    zIndex: 1,
+    position: "absolute",
+    height: Dimensions.get("window").height - 55,
+    top: 50,
     // backgroundColor: "#C0C0C0",
     backgroundColor: "#E6E6FA",
     alignItems: "flex-start",

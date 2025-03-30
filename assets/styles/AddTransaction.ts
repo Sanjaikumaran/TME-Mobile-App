@@ -19,12 +19,11 @@ const AddTransactionsStyles = StyleSheet.create({
     marginBottom: 10,
   },
   flatList: {
-    marginBottom: 60,
+    marginBottom: 100,
   },
   flatListFooter: {
     marginBottom: 20,
     marginTop: 20,
-
 
     paddingHorizontal: 20,
     flexDirection: "row",
@@ -101,10 +100,10 @@ const AddTransactionsStyles = StyleSheet.create({
   goToBottomBtn: {
     position: "absolute",
     right: 30,
-    bottom: 125,
+    bottom: 115,
     width: 36,
     height: 36,
-borderRadius: 18,
+    borderRadius: 18,
     backgroundColor: "#fff",
     borderColor: "#4B0082",
     borderWidth: 2,
@@ -115,6 +114,35 @@ borderRadius: 18,
     shadowOpacity: 0.3,
     shadowRadius: 3,
     elevation: 5,
+  },
+
+  dropdownContainer: {
+    position: "absolute",
+    top: 65,
+    left: 0,
+    right: 0,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    zIndex: 10,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    maxHeight: 175,
+  },
+
+  dropdownItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  dropdownItemText: {
+    fontSize: 16,
+    color: "#333",
   },
 });
 

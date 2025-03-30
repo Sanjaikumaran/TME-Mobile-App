@@ -13,7 +13,6 @@ export const createTable = async (tableName: string, columns: string[]) => {
   try {
     const database = await openDatabase();
 
-
     const columnsDefinition = columns.join(", ");
 
     await database.execAsync(`
@@ -32,23 +31,25 @@ export const createTable = async (tableName: string, columns: string[]) => {
 
 export const insertIntoTable = async (
   tableName: string,
-  data: Record<string, any>
+  dataArray: Record<string, any>[]
 ): Promise<{ flag: boolean; message: string }> => {
   try {
     const database = await openDatabase();
 
-  
-    const columns = Object.keys(data).join(", ");
-    const placeholders = Object.keys(data).map(() => "?").join(", ");
-    const values = Object.values(data);
+    for (const data of dataArray) {
+      const columns = Object.keys(data).join(", ");
+      const placeholders = Object.keys(data)
+        .map(() => "?")
+        .join(", ");
+      const values = Object.values(data);
 
-    const query = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders})`;
+      const query = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders})`;
 
-    await database.runAsync(query, values);
+      await database.runAsync(query, values);
+    }
 
-    return { flag: true, message: "Successfully inserted data!" };
+    return { flag: true, message: "Successfully inserted all records!" };
   } catch (error: any) {
-
     return { flag: false, message: error.message };
   }
 };
@@ -56,13 +57,15 @@ export const insertIntoTable = async (
 export const getDataFromTable = async (
   tableName: string,
   columns: string[] = ["*"],
-  whereClause: string = "1=1", 
+  whereClause: string = "1=1",
   values: any[] = []
 ): Promise<{ flag: boolean; message: string; data: any[] }> => {
   try {
     const database = await openDatabase();
 
-    const query = `SELECT ${columns.join(", ")} FROM ${tableName} WHERE ${whereClause}`;
+    const query = `SELECT ${columns.join(
+      ", "
+    )} FROM ${tableName} WHERE ${whereClause}`;
 
     const data = await database.getAllAsync(query, values);
 
@@ -71,7 +74,6 @@ export const getDataFromTable = async (
     return { flag: false, message: error.message, data: [] };
   }
 };
-
 
 export const deleteFromTable = async (
   tableName: string,
@@ -108,15 +110,24 @@ export const updateDataInTable = async (
   } catch (error: any) {
     return { flag: false, message: error.message };
   }
-}; 
-
+};
 
 createTable("users", [
   "username TEXT UNIQUE NOT NULL",
   "password TEXT NOT NULL",
   "displayName TEXT",
   "mobileNumber TEXT",
-  "emailAddress TEXT"
+  "emailAddress TEXT",
+]).catch(console.error);
+
+createTable("Transactions", [
+  "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP",
+  "date TEXT NOT NULL",
+  "time TEXT NOT NULL",
+  "amount REAL NOT NULL",
+  "category TEXT NOT NULL",
+  "subCategory TEXT",
+  "remarks TEXT",
 ]).catch(console.error);
 
 export default openDatabase;

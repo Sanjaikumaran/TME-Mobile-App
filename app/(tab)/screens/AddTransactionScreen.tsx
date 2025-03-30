@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,11 +9,18 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { ToastProvider, useToast } from "react-native-toast-notifications";
 
+import HeaderBar from "@/components/HeaderBar";
 import BottomNavTab from "@/components/BottomNavTab";
+import Dropdown from "@/components/Dropdown";
+
+import { insertIntoTable, getDataFromTable } from "@/utils/database/database";
+import { formatDateTime } from "@/utils/helpers";
+
+import { PLACEHOLDER, LABEL } from "@/constants/variable";
+
 import CloseIcon from "@/assets/icons/CloseIcon";
 import DownIcon from "@/assets/icons/ChevronDownIcon";
 
-import { PLACEHOLDER, LABEL } from "@/constants/variable";
 import styles from "@/assets/styles/AddTransaction";
 
 const AddTransactionScreen = () => {
@@ -23,45 +30,61 @@ const AddTransactionScreen = () => {
 
   const [transactions, setTransactions] = useState([
     {
-      id: Date.now(),
+      id: `${Date.now()}${Math.random().toString(36).substring(2, 15)}`,
       date: new Date(),
       time: new Date(),
       amount: "",
       category: "",
+      subCategory: "",
       remarks: "",
     },
   ]);
   const [showPicker, setShowPicker] = useState<{
     flag: boolean;
     mode: "date" | "time";
-    id: number | null;
+    id: string;
   }>({
     flag: false,
     mode: "date",
-    id: null,
+    id: "",
   });
   const [isAtBottom, setIsAtBottom] = useState(true);
 
+  const [categories, setCategories] = useState<Array<string>>([]);
+  const [subCategories, setSubCategories] = useState<Array<string>>([]);
+
+  const getTransactions = async () => {
+    const response = await getDataFromTable("Transactions", [
+      "category",
+      "subCategory",
+    ]);
+    if (response.flag) {
+      const categories = Array.from(
+        new Set(response.data.map((t) => t.category))
+      );
+      const subCategories = Array.from(
+        new Set(response.data.map((t) => t.subCategory))
+      );
+      setCategories(categories);
+      setSubCategories(subCategories);
+    }
+  };
+  useEffect(() => {
+    getTransactions();
+  }, []);
   const handleScroll = (event: any) => {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
     const isBottom =
       layoutMeasurement.height + contentOffset.y >= contentSize.height - 10;
     setIsAtBottom(isBottom);
   };
-  const formatDateTime = (date: Date, mode: "date" | "time"): string => {
-    return mode === "date"
-      ? `${date.getDate().toString().padStart(2, "0")}-${(date.getMonth() + 1)
-          .toString()
-          .padStart(2, "0")}-${date.getFullYear()}`
-      : date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
 
   const handleDateTimeChange = (
     selectedDate: Date,
     mode: "date" | "time",
-    id: number
+    id: string
   ) => {
-    setShowPicker({ flag: false, mode, id: null });
+    setShowPicker({ flag: false, mode, id: "" });
     setTransactions(
       transactions.map((t) =>
         t.id === id ? { ...t, [mode]: selectedDate } : t
@@ -73,11 +96,13 @@ const AddTransactionScreen = () => {
     setTransactions((prev) => [
       ...prev,
       {
-        id: Date.now(),
+        id: `${Date.now()}${Math.random().toString(36).substring(2, 15)}`,
         date: new Date(),
         time: new Date(),
         amount: "",
         category: "",
+        subCategory: "",
+
         remarks: "",
       },
     ]);
@@ -85,13 +110,13 @@ const AddTransactionScreen = () => {
     toast.show("Transaction form added!", {
       type: "display",
       placement: "bottom",
-      duration: 2000,
+      duration: 1500,
       animationType: "slide-in",
       style: { marginLeft: 20 },
     });
   };
 
-  const deleteTransaction = (id: number) => {
+  const deleteTransaction = (id: string) => {
     toast.hideAll();
     const deleteIndex = transactions.findIndex((t) => t.id === id);
 
@@ -100,13 +125,13 @@ const AddTransactionScreen = () => {
     toast.show(`Transaction ${deleteIndex + 1} removed!`, {
       type: "display",
       placement: "bottom",
-      duration: 2000,
+      duration: 1500,
       animationType: "slide-in",
       style: { marginLeft: 20 },
     });
   };
 
-  const addTransaction = () => {
+  const addTransaction = async () => {
     const emptyIndex = transactions.findIndex(
       (t) => t.amount === "" || t.category === ""
     );
@@ -122,19 +147,55 @@ const AddTransactionScreen = () => {
       });
       return;
     }
-
-    console.log(transactions);
+    const transactionsToInsert = transactions.map(({ id, ...rest }) => rest);
+    const response = await insertIntoTable(
+      "Transactions",
+      transactionsToInsert
+    );
+    if (response.flag) {
+      toast.show("Transaction Added Successfully!", {
+        type: "success",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+        style: { marginLeft: 20 },
+      });
+      setTransactions([
+        {
+          id: `${Date.now()}${Math.random().toString(36).substring(2, 15)}`,
+          date: new Date(),
+          time: new Date(),
+          amount: "",
+          category: "",
+          subCategory: "",
+          remarks: "",
+        },
+      ]);
+      getTransactions();
+    } else {
+      toast.show("Could not add transaction", {
+        type: "danger",
+        placement: "bottom",
+        duration: 4000,
+        animationType: "slide-in",
+        style: { marginLeft: 20 },
+      });
+    }
   };
 
   return (
     <View style={styles.container}>
+      <HeaderBar headerText="New Transaction" />
       <View>
         <FlatList
           ref={flatListRef}
           onScroll={handleScroll}
           style={styles.flatList}
           data={transactions}
+          collapsable={false}
           keyExtractor={(item) => item.id.toString()}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
           renderItem={({ item, index }) => (
             <View style={styles.addTransactionContainer}>
               <View style={styles.headerContainer}>
@@ -150,33 +211,30 @@ const AddTransactionScreen = () => {
               </View>
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>{LABEL.transactionDate}</Text>
-                <View style={styles.input}>
+                <TouchableOpacity
+                  style={styles.input}
+                  onPress={() =>
+                    setShowPicker({ flag: true, mode: "time", id: item.id })
+                  }
+                >
                   <Text>{formatDateTime(item.date, "date")}</Text>
-                  <Text
-                    onPress={() =>
-                      setShowPicker({ flag: true, mode: "date", id: item.id })
-                    }
-                  >
-                    📅
-                  </Text>
-                </View>
+                  <Text>📅</Text>
+                </TouchableOpacity>
               </View>
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>{LABEL.transactionTime}</Text>
-                <View style={styles.input}>
+                <TouchableOpacity
+                  style={styles.input}
+                  onPress={() =>
+                    setShowPicker({ flag: true, mode: "time", id: item.id })
+                  }
+                >
                   <Text>{formatDateTime(item.time, "time")}</Text>
-                  <Text
-                    onPress={() =>
-                      setShowPicker({ flag: true, mode: "time", id: item.id })
-                    }
-                  >
-                    ⏰
-                  </Text>
-                </View>
+                  <Text>⏰</Text>
+                </TouchableOpacity>
               </View>
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>{LABEL.amount}</Text>
-
                 <TextInput
                   style={styles.input}
                   placeholder={PLACEHOLDER.amount + PLACEHOLDER.mandatoryStar}
@@ -191,30 +249,55 @@ const AddTransactionScreen = () => {
                   }
                 />
               </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>{LABEL.category}</Text>
-
-                <TextInput
-                  style={styles.input}
-                  placeholder={PLACEHOLDER.category + PLACEHOLDER.mandatoryStar}
-                  value={item.category}
-                  onChangeText={(text) =>
-                    setTransactions(
-                      transactions.map((t) =>
-                        t.id === item.id ? { ...t, category: text } : t
-                      )
+              <Dropdown
+                label={LABEL.category}
+                placeholder={PLACEHOLDER.category + PLACEHOLDER.mandatoryStar}
+                value={item.category}
+                options={categories}
+                onOptionSelect={(text) => {
+                  setTransactions(
+                    transactions.map((t) =>
+                      t.id === item.id ? { ...t, category: text } : t
                     )
-                  }
-                />
-              </View>
+                  );
+                }}
+                onChangeText={(text) => {
+                  setTransactions(
+                    transactions.map((t) =>
+                      t.id === item.id ? { ...t, category: text } : t
+                    )
+                  );
+                }}
+              />
+              <Dropdown
+                label={LABEL.subCategory}
+                placeholder={PLACEHOLDER.subCategory}
+                value={item.subCategory}
+                options={subCategories}
+                onOptionSelect={(text) => {
+                  setTransactions(
+                    transactions.map((t) =>
+                      t.id === item.id ? { ...t, subCategory: text } : t
+                    )
+                  );
+                }}
+                onChangeText={(text) => {
+                  setTransactions(
+                    transactions.map((t) =>
+                      t.id === item.id ? { ...t, subCategory: text } : t
+                    )
+                  );
+                }}
+              />
+
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>{LABEL.remarks}</Text>
-
                 <TextInput
                   style={[styles.textArea, styles.input]}
                   placeholder={PLACEHOLDER.remarks + PLACEHOLDER.mandatoryStar}
                   value={item.remarks}
                   multiline
+                  onFocus={() => setTimeout(() => {}, 5000)}
                   numberOfLines={4}
                   onChangeText={(text) =>
                     setTransactions(
