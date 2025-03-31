@@ -14,7 +14,7 @@ import BottomNavTab from "@/components/BottomNavTab";
 import Dropdown from "@/components/Dropdown";
 
 import { insertIntoTable, getDataFromTable } from "@/utils/database/database";
-import { formatDateTime } from "@/utils/helpers";
+import { formatDateTime, getUserId } from "@/utils/helpers";
 
 import { PLACEHOLDER, LABEL } from "@/constants/variable";
 
@@ -54,10 +54,11 @@ const AddTransactionScreen = () => {
   const [subCategories, setSubCategories] = useState<Array<string>>([]);
 
   const getTransactions = async () => {
-    const response = await getDataFromTable("Transactions", [
-      "category",
-      "subCategory",
-    ]);
+    const response = await getDataFromTable(
+      "Transactions",
+      ["category", "subCategory"],
+      `userId='${await getUserId()}'`
+    );
     if (response.flag) {
       const categories = Array.from(
         new Set(response.data.map((t) => t.category))
@@ -102,7 +103,6 @@ const AddTransactionScreen = () => {
         amount: "",
         category: "",
         subCategory: "",
-
         remarks: "",
       },
     ]);
@@ -147,7 +147,12 @@ const AddTransactionScreen = () => {
       });
       return;
     }
-    const transactionsToInsert = transactions.map(({ id, ...rest }) => rest);
+    const transactionsToInsert = transactions.map(({ id, ...rest }) => ({
+      ...rest,
+      date: new Date().toISOString(),
+      time: new Date().toISOString(),
+    }));
+
     const response = await insertIntoTable(
       "Transactions",
       transactionsToInsert
@@ -325,6 +330,7 @@ const AddTransactionScreen = () => {
           }
         />
       </View>
+      <BottomNavTab />
       {transactions.length > 1 && (
         <TouchableOpacity style={styles.goToBottomBtn}>
           <DownIcon
@@ -343,7 +349,6 @@ const AddTransactionScreen = () => {
         </TouchableOpacity>
       )}
 
-      <BottomNavTab />
       {showPicker.flag && showPicker.id !== null && (
         <DateTimePicker
           value={

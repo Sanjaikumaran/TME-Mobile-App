@@ -90,13 +90,15 @@ const SignupScreen = () => {
       });
       return;
     }
-    const response = await insertIntoTable("users", [
+    const response = await insertIntoTable("Users", [
       {
         username: username,
         password: btoa(newPassword),
         displayName: displayName,
         mobileNumber: mobileNumber,
         emailAddress: emailAddress,
+        userId: emailAddress + mobileNumber,
+        isAdmin: false,
       },
     ]);
 
@@ -195,7 +197,10 @@ const SignupScreen = () => {
             placeholder={PLACEHOLDER.mobileNumber + PLACEHOLDER.mandatoryStar}
             value={mobileNumber}
             keyboardType="numeric"
-            onChangeText={(text) => setMobileNumber(text.trim())}
+            onChangeText={(text) => {
+              if (text.trim().length === 11) return;
+              setMobileNumber(text.trim());
+            }}
           />
         </View>
         <View style={styles.inputContainer}>

@@ -1,4 +1,5 @@
 import * as SQLite from "expo-sqlite";
+import { getUserId } from "@/utils/helpers";
 
 let db: SQLite.SQLiteDatabase | null = null;
 
@@ -37,13 +38,17 @@ export const insertIntoTable = async (
     const database = await openDatabase();
 
     for (const data of dataArray) {
-      const columns = Object.keys(data).join(", ");
-      const placeholders = Object.keys(data)
+      const userId = await getUserId();
+      const updatedData = userId ? { ...data, userId: userId } : data;
+
+      const columns = Object.keys(updatedData).join(", ");
+      const placeholders = Object.keys(updatedData)
         .map(() => "?")
         .join(", ");
-      const values = Object.values(data);
+      const values = Object.values(updatedData);
 
       const query = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders})`;
+      console.log(query, values);
 
       await database.runAsync(query, values);
     }
@@ -112,18 +117,22 @@ export const updateDataInTable = async (
   }
 };
 
-createTable("users", [
+createTable("Users", [
   "username TEXT UNIQUE NOT NULL",
   "password TEXT NOT NULL",
   "displayName TEXT",
   "mobileNumber TEXT",
   "emailAddress TEXT",
+  "userId TEXT UNIQUE NOT NULL",
+  "isAdmin BOOLEAN DEFAULT FALSE",
+  "createdAt DATETIME DEFAULT CURRENT_TIMESTAMP",
 ]).catch(console.error);
 
 createTable("Transactions", [
   "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP",
   "date TEXT NOT NULL",
   "time TEXT NOT NULL",
+  "userId TEXT NOT NULL",
   "amount REAL NOT NULL",
   "category TEXT NOT NULL",
   "subCategory TEXT",

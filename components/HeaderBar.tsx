@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { View, Text, Animated, Easing } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
 import { getDataFromTable } from "@/utils/database/database";
 
@@ -36,6 +38,15 @@ const HeaderBar = ({ headerText = PLACEHOLDER.trackMEase }: HeaderBarProps) => {
     }).start();
   };
 
+  const logOut = async () => {
+    try {
+      await AsyncStorage.clear();
+      router.push("./LoginScreen");
+    } catch (error) {
+      console.error("Error clearing AsyncStorage:", error);
+    }
+  };
+
   return (
     <>
       <View style={styles.container}>
@@ -47,7 +58,7 @@ const HeaderBar = ({ headerText = PLACEHOLDER.trackMEase }: HeaderBarProps) => {
           )}
 
           <Text style={styles.title}>{headerText}</Text>
-          <LogoutIcon onPress={() => console.log("logOut")} color="#fff" />
+          <LogoutIcon onPress={logOut} color="#fff" />
         </View>
       </View>
       <Animated.View style={[{ width: widthAnim }, styles.menuTab]}>
