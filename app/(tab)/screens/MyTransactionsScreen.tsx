@@ -26,7 +26,6 @@ interface CardViewProps {
 }
 const CardView = ({ data, searchTerm }: CardViewProps) => {
   if (data.length === 0) {
-    console.log("CardView data", data, searchTerm);
     return (
       <View style={styles.noDataContainer}>
         <Text style={styles.noDataText}>
@@ -85,6 +84,16 @@ const CardView = ({ data, searchTerm }: CardViewProps) => {
 };
 
 const MyTransactionScreen = () => {
+  const columns = [
+    { accessor: "id", label: "Transaction ID" },
+    { accessor: "date", label: "Date" },
+    { accessor: "time", label: "Time" },
+    { accessor: "amount", label: "Amount" },
+    { accessor: "category", label: "Category" },
+    { accessor: "subCategory", label: "Sub-Category" },
+    { accessor: "remarks", label: "Remarks" },
+  ];
+  
   const [tableData, setTableData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<any[]>([]);
@@ -131,15 +140,7 @@ const MyTransactionScreen = () => {
     );
     setFilteredData(filtered);
   };
-  const columns = [
-    { accessor: "id", label: "Transaction ID" },
-    { accessor: "date", label: "Date" },
-    { accessor: "time", label: "Time" },
-    { accessor: "amount", label: "Amount" },
-    { accessor: "category", label: "Category" },
-    { accessor: "subCategory", label: "Sub-Category" },
-    { accessor: "remarks", label: "Remarks" },
-  ];
+
   return (
     <View style={styles.container}>
       <HeaderBar headerText="My Transactions" />

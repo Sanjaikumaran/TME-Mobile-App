@@ -12,6 +12,7 @@ import styles from "@/assets/styles/Dropdown";
 
 interface DropdownProps {
   label: string;
+  showLabel?: boolean;
   value: string;
   options: string[];
   placeholder?: string;
@@ -23,6 +24,7 @@ interface DropdownProps {
 
 const Dropdown = ({
   label,
+  showLabel = true,
   value,
   placeholder = "Select an option",
   onFocus,
@@ -60,7 +62,7 @@ const Dropdown = ({
   }, [value, options]);
   return (
     <View style={styles.inputContainer}>
-      <Text style={styles.inputLabel}>{label}</Text>
+      {showLabel && <Text style={styles.inputLabel}>{label}</Text>}
       <TextInput
         style={styles.input}
         placeholder={placeholder}
@@ -77,7 +79,7 @@ const Dropdown = ({
       />
       {showDropDown && filteredOptions.length > 0 && (
         <ScrollView
-          style={styles.dropdownContainer}
+          style={[styles.dropdownContainer,!showLabel && {top: 45}]}
           nestedScrollEnabled={true}
           keyboardShouldPersistTaps="handled"
         >

@@ -4,7 +4,7 @@ const DropdownStyles = StyleSheet.create({
   inputContainer: {
     flexDirection: "column",
     alignItems: "flex-start",
-    marginBottom: 20,
+    width:"100%"
   },
   inputLabel: {
     fontSize: 16,

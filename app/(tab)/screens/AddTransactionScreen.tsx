@@ -254,46 +254,51 @@ const AddTransactionScreen = () => {
                   }
                 />
               </View>
-              <Dropdown
-                label={LABEL.category}
-                placeholder={PLACEHOLDER.category + PLACEHOLDER.mandatoryStar}
-                value={item.category}
-                options={categories}
-                onOptionSelect={(text) => {
-                  setTransactions(
-                    transactions.map((t) =>
-                      t.id === item.id ? { ...t, category: text } : t
-                    )
-                  );
-                }}
-                onChangeText={(text) => {
-                  setTransactions(
-                    transactions.map((t) =>
-                      t.id === item.id ? { ...t, category: text } : t
-                    )
-                  );
-                }}
-              />
-              <Dropdown
-                label={LABEL.subCategory}
-                placeholder={PLACEHOLDER.subCategory}
-                value={item.subCategory}
-                options={subCategories}
-                onOptionSelect={(text) => {
-                  setTransactions(
-                    transactions.map((t) =>
-                      t.id === item.id ? { ...t, subCategory: text } : t
-                    )
-                  );
-                }}
-                onChangeText={(text) => {
-                  setTransactions(
-                    transactions.map((t) =>
-                      t.id === item.id ? { ...t, subCategory: text } : t
-                    )
-                  );
-                }}
-              />
+              <View style={styles.inputContainer}>
+                <Dropdown
+                  label={LABEL.category}
+                  placeholder={PLACEHOLDER.category + PLACEHOLDER.mandatoryStar}
+                  value={item.category}
+                  options={categories}
+                  onOptionSelect={(text) => {
+                    setTransactions(
+                      transactions.map((t) =>
+                        t.id === item.id ? { ...t, category: text } : t
+                      )
+                    );
+                  }}
+                  onChangeText={(text) => {
+                    setTransactions(
+                      transactions.map((t) =>
+                        t.id === item.id ? { ...t, category: text } : t
+                      )
+                    );
+                  }}
+                />
+              </View>
+            
+              <View style={styles.inputContainer}>
+                <Dropdown
+                  label={LABEL.subCategory}
+                  placeholder={PLACEHOLDER.subCategory}
+                  value={item.subCategory}
+                  options={subCategories}
+                  onOptionSelect={(text) => {
+                    setTransactions(
+                      transactions.map((t) =>
+                        t.id === item.id ? { ...t, subCategory: text } : t
+                      )
+                    );
+                  }}
+                  onChangeText={(text) => {
+                    setTransactions(
+                      transactions.map((t) =>
+                        t.id === item.id ? { ...t, subCategory: text } : t
+                      )
+                    );
+                  }}
+                />
+              </View>
 
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>{LABEL.remarks}</Text>
