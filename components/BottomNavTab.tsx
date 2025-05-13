@@ -1,14 +1,29 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { router } from "expo-router";
+import { router, usePathname } from "expo-router";
 
 import styles from "@/assets/styles/BottomNavTab";
 
 const BottomNavTab = () => {
-  const [activeTab, setActiveTab] = useState("Home");
+  const pathname = usePathname();
+  const getActiveTab = () => {
+    switch (pathname.split("/").pop()) {
+      case "HomeScreen":
+        return "Home";
+      case "MyTransactionsScreen":
+        return "My Transactions";
+      case "AddTransactionScreen":
+        return "Add Transaction";
+      case "SettingsScreen":
+        return "Settings";
+      default:
+        return "Home";
+    }
+  };
+
+  const activeTab = getActiveTab();
 
   const handlePress = (tab: string) => {
-    setActiveTab(tab);
     router.push(`./${tab.replace(" ", "")}Screen`);
   };
 
@@ -28,4 +43,5 @@ const BottomNavTab = () => {
     </View>
   );
 };
+
 export default BottomNavTab;

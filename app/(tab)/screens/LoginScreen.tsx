@@ -48,7 +48,7 @@ const LoginScreen = () => {
     }
     const response = await getDataFromTable(
       "users",
-      ["username", "password"],
+      ["username", "password", "userId"],
       `username='${username}'`
     );
 
