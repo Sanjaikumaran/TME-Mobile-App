@@ -74,7 +74,7 @@ const HomeScreen = () => {
                     style={styles.filterOption}
                     // onPress={() => toggleFilter(col.accessor)}
                   >
-                    <FilterFold label={col.label} inputType={col.inputType as InputType} isRangeFilter={true}/>
+                    <FilterFold label={col.label} inputType={col.inputType as InputType} isRangeFilter={col.inputType !== 'multiselect'}/>
                   </Pressable>
                 </View>
               ))}

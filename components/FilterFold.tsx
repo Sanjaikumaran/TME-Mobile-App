@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -21,7 +21,9 @@ import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { formatDateTime } from "@/utils/helpers";
+import { formatDateTime, getUserId } from "@/utils/helpers";
+import Dropdown from "./Dropdown";
+import { getDataFromTable } from "@/utils/database/database";
 export type InputType =
   | "text"
   | "numeric"

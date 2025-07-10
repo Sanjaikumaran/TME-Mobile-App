@@ -11,8 +11,10 @@ import {
 import styles from "@/assets/styles/Dropdown";
 
 interface DropdownProps {
-  label: string;
+  label?: string;
   showLabel?: boolean;
+  searchable?: boolean;
+  allowInput?: boolean;
   value: string;
   options: string[];
   placeholder?: string;
@@ -21,11 +23,12 @@ interface DropdownProps {
   onFocus?: () => void;
   onBlur?: () => void;
 }
-
 const Dropdown = ({
   label,
-  showLabel = true,
   value,
+  showLabel = true,
+  allowInput = true,
+  searchable = false,
   placeholder = "Select an option",
   onFocus,
   onBlur,
@@ -35,6 +38,8 @@ const Dropdown = ({
 }: DropdownProps) => {
   const [showDropDown, setShowDropDown] = useState(false);
   const [filteredOptions, setFilteredOptions] = useState<string[]>([]);
+
+  const inputEnabled = searchable ? false : allowInput;
 
   useEffect(() => {
     if (!value) {
@@ -72,14 +77,17 @@ const Dropdown = ({
           setShowDropDown(true);
         }}
         onBlur={() => {
+          if (!inputEnabled) {
+            options.includes(value) ? onOptionSelect(value) : onChangeText("");
+          }
           onBlur && onBlur();
           setShowDropDown(false);
         }}
-        onChangeText={onChangeText}
+        onChangeText={ onChangeText }
       />
       {showDropDown && filteredOptions.length > 0 && (
         <ScrollView
-          style={[styles.dropdownContainer,!showLabel && {top: 45}]}
+          style={[styles.dropdownContainer, !showLabel && { top: 45 }]}
           nestedScrollEnabled={true}
           keyboardShouldPersistTaps="handled"
         >
