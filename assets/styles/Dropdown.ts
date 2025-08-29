@@ -4,7 +4,7 @@ const DropdownStyles = StyleSheet.create({
   inputContainer: {
     flexDirection: "column",
     alignItems: "flex-start",
-    width:"100%"
+    width: "100%",
   },
   inputLabel: {
     fontSize: 16,
@@ -30,7 +30,7 @@ const DropdownStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
-    zIndex: 10,
+    zIndex: 1000,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -39,6 +39,11 @@ const DropdownStyles = StyleSheet.create({
     maxHeight: 175,
   },
 
+  dropdownAbove: {
+    top: "auto",
+    bottom: 42,
+    shadowOffset: { width: 0, height: -2 },
+  },
   dropdownItem: {
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -49,6 +54,16 @@ const DropdownStyles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
   },
+  overlay: {
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: "transparent",
+  zIndex: 999, // must be lower than dropdownContainer (1000)
+},
+
 });
 
 export default DropdownStyles;

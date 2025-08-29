@@ -1,9 +1,8 @@
-import {  StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
 const HomeScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
     paddingVertical: 0,
   },
   modalContainer: {
@@ -20,12 +19,11 @@ const HomeScreenStyles = StyleSheet.create({
     maxHeight: "80%",
   },
   modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
-  filterOption: {
+  filterOptions: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 5,
   },
-  // filterText: { fontSize: 16, marginLeft: 10 },
   closeButton: {
     marginTop: 10,
     alignItems: "center",

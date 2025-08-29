@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,10 @@ import {
   TouchableOpacity,
   ScrollView,
   Keyboard,
+  Dimensions,
+  findNodeHandle,
+  UIManager,
+  TouchableWithoutFeedback,
 } from "react-native";
 
 import styles from "@/assets/styles/Dropdown";
@@ -18,11 +22,12 @@ interface DropdownProps {
   value: string;
   options: string[];
   placeholder?: string;
-  onChangeText: (text: string) => void;
+  onChangeText?: (text: string) => void;
   onOptionSelect: (optionSelected: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
 }
+
 const Dropdown = ({
   label,
   value,
@@ -38,8 +43,32 @@ const Dropdown = ({
 }: DropdownProps) => {
   const [showDropDown, setShowDropDown] = useState(false);
   const [filteredOptions, setFilteredOptions] = useState<string[]>([]);
+  const [dropdownAbove, setDropdownAbove] = useState(false);
+
+  const inputRef = useRef<View>(null);
 
   const inputEnabled = searchable ? false : allowInput;
+
+  const calculatePlacement = () => {
+    if (!inputRef.current) return;
+
+    const handle = findNodeHandle(inputRef.current);
+    if (!handle) return;
+
+    UIManager.measure(handle, (_x, _y, _width, height, _pageX, pageY) => {
+      const screenHeight = Dimensions.get("window").height;
+      const spaceBelow = screenHeight - (pageY + height);
+      const spaceAbove = pageY;
+
+      setDropdownAbove(spaceBelow < 200 && spaceAbove > spaceBelow);
+    });
+  };
+
+  useEffect(() => {
+    if (showDropDown) {
+      calculatePlacement();
+    }
+  }, [showDropDown]);
 
   useEffect(() => {
     if (!value) {
@@ -65,9 +94,21 @@ const Dropdown = ({
       matchingOptions.length > 0 ? matchingOptions : ["No matching options"]
     );
   }, [value, options]);
+
   return (
-    <View style={styles.inputContainer}>
+    <View style={styles.inputContainer} ref={inputRef}>
       {showLabel && <Text style={styles.inputLabel}>{label}</Text>}
+
+      {/* {showDropDown && (
+      <TouchableWithoutFeedback
+        onPress={() => {
+          setShowDropDown(false);
+          Keyboard.dismiss();
+        }}
+      >
+        <View style={styles.overlay} />
+      </TouchableWithoutFeedback>
+    )} */}
       <TextInput
         style={styles.input}
         placeholder={placeholder}
@@ -78,16 +119,23 @@ const Dropdown = ({
         }}
         onBlur={() => {
           if (!inputEnabled) {
-            options.includes(value) ? onOptionSelect(value) : onChangeText("");
+            options.includes(value)
+              ? onOptionSelect(value)
+              : onChangeText && onChangeText("");
           }
           onBlur && onBlur();
           setShowDropDown(false);
         }}
-        onChangeText={ onChangeText }
+        onChangeText={onChangeText}
       />
+
       {showDropDown && filteredOptions.length > 0 && (
         <ScrollView
-          style={[styles.dropdownContainer, !showLabel && { top: 45 }]}
+          style={[
+            styles.dropdownContainer,
+            !showLabel && { top: 45 },
+            dropdownAbove && styles.dropdownAbove,
+          ]}
           nestedScrollEnabled={true}
           keyboardShouldPersistTaps="handled"
         >
@@ -96,11 +144,12 @@ const Dropdown = ({
               key={index}
               style={styles.dropdownItem}
               onPress={() => {
+                Keyboard.dismiss();
+
                 if (option === "No matching options") {
                   setShowDropDown(false);
                   return;
                 }
-                Keyboard.dismiss();
                 onOptionSelect(option);
                 setShowDropDown(false);
               }}

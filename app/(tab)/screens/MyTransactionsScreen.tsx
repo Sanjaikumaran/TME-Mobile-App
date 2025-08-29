@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
+  Animated,
 } from "react-native";
 import Table from "@/components/Table";
 
@@ -19,6 +20,8 @@ import { getDataFromTable } from "@/utils/database/database";
 import { formatDateTime, getUserId } from "@/utils/helpers";
 
 import styles from "@/assets/styles/MyTransaction";
+import useFilter from "@/components/FilterComponent";
+import useExport from "@/components/ExportComponent";
 
 interface CardViewProps {
   data: any[];
@@ -93,7 +96,7 @@ const MyTransactionScreen = () => {
     { accessor: "subCategory", label: "Sub-Category" },
     { accessor: "remarks", label: "Remarks" },
   ];
-  
+
   const [tableData, setTableData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredData, setFilteredData] = useState<any[]>([]);
@@ -162,6 +165,10 @@ const MyTransactionScreen = () => {
           searchTerm={searchTerm}
         />
       </SafeAreaView>
+      <ToolBar
+        setTableData={setTableData}
+        exportData={searchTerm === "" ? tableData : filteredData}
+      />
 
       <BottomNavTab />
 
@@ -206,3 +213,98 @@ const MyTransaction = () => {
 };
 
 export default MyTransaction;
+
+interface ToolBarProps {
+  setTableData: React.Dispatch<React.SetStateAction<any[]>>;
+  exportData: any[];
+}
+
+const ToolBar = ({ setTableData, exportData }: ToolBarProps) => {
+  const [isToolsVisible, setIsToolsVisible] = useState(false);
+  const animation = useRef(new Animated.Value(0)).current;
+
+  const { FilterComponent, setShowFilterModal } = useFilter();
+  const { ExportModal, setShowExportModal } = useExport({ exportData });
+
+  const toggleTools = () => {
+    Animated.timing(animation, {
+      toValue: isToolsVisible ? 0 : 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const toolOptions = [
+    {
+      label: "Filter",
+      icon: <MaterialIcons name="filter-list-alt" size={24} color="#000" />,
+      onPress: () => {
+        setShowFilterModal(true);
+      },
+      component: (
+        <FilterComponent
+          setData={setTableData}
+          page="myTransactions"
+          showIcon={false}
+        />
+      ),
+    },
+    {
+      label: "Export",
+      icon: <MaterialIcons name="send" size={24} color="#000" />,
+      onPress: () => {
+        setShowExportModal(true);
+      },
+      component: <ExportModal />,
+    },
+  ];
+
+  return (
+    <>
+      <View style={styles.toolBarContainer}>
+        <TouchableOpacity
+          onPress={() => {
+            setIsToolsVisible(!isToolsVisible);
+            toggleTools();
+          }}
+        >
+          <MaterialIcons name="carpenter" size={24} color="#000" />
+        </TouchableOpacity>
+      </View>
+
+      {toolOptions.map((tool, index) => {
+        const translateY = animation.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -(index + 1) * 45],
+        });
+
+        const opacity = animation.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, 1],
+        });
+
+        return (
+          <Animated.View
+            key={index}
+            style={[
+              isToolsVisible && styles.toolWrapper,
+              {
+                transform: [{ translateY }],
+                opacity,
+              },
+            ]}
+          >
+            <TouchableOpacity
+              style={styles.toolContainer}
+              onPress={tool.onPress}
+            >
+              <Text style={styles.toolText}>{tool.label}</Text>
+              {tool.icon}
+            </TouchableOpacity>
+            {tool.component}
+          </Animated.View>
+        );
+      })}
+    </>
+  );
+};
